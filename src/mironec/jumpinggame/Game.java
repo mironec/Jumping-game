@@ -1,6 +1,7 @@
 package mironec.jumpinggame;
 
 import java.awt.Color;
+import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
@@ -20,6 +21,8 @@ public class Game{
 	public static final int PLATFORM_HEIGHT = 30;
 	public static final int MAX_NUMBER = 20;
 	public static final int EXPANDING_TICKS = 25;
+	public static final int DYING_TICKS = 500;
+	private static final int MIN_SPACE = 30;
 	
 	private ArrayList<Platform> platforms;
 	private ArrayList<Platform> platformsToAdd;
@@ -27,26 +30,59 @@ public class Game{
 	private Player player;
 	private Main m;
 	private int safeGround;
+	private int oldSafeGround;
 	private int viewPointX,viewPointY;
 	private Random rand;
 	private int ticksToExpand;
+	private int ticksToDie;
 	private Rectangle blackSpace;
+	private int score;
+	private int levelsDone;
 	
 	public Game(Main m){
 		this.m=m;
 	}
 	
 	public void generateLevel(int y){
+		int numOfPlatforms = rand.nextInt(3) + 2; //2-4
+		
+		int emptySpace = m.getWidth()-numOfPlatforms*PLATFORM_WIDTH - (numOfPlatforms+1)*MIN_SPACE;
+		double weights[] = new double[numOfPlatforms+1];
+		double spaces[] = new double[numOfPlatforms+1];
+		double totalWeight = 0;
+		for(int i = 0;i<numOfPlatforms+1;i++){
+			weights[i] = rand.nextDouble();
+			totalWeight += weights[i];
+		}
+		for(int i = 0;i<numOfPlatforms+1;i++){
+			spaces[i] = MIN_SPACE + weights[i]/totalWeight*emptySpace;
+		}
+		int Xfar = (int)spaces[0];
+		for(int i = 0;i<numOfPlatforms;i++){
+			addPlatform(new Platform(Xfar, y, rand, MAX_NUMBER, this));
+			Xfar+=(int)spaces[i+1]+PLATFORM_WIDTH;
+		}
 		
 	}
 	
 	public void raiseSafeGround(int y, Platform p){
+		oldSafeGround=safeGround;
 		safeGround=y;
+		ArrayList<Platform> avail = new ArrayList<Platform>();
 		for(Platform pe : platforms){
 			if(pe.getY()>=y){removePlatform(pe);}
+			if(pe.getY()>=y-200&&pe.getY()<y){avail.add(pe);}
 		}
+		player.setNumber(avail.get(rand.nextInt(avail.size())).getResult());
+		generateLevel(y-600);
 		ticksToExpand = EXPANDING_TICKS;
 		blackSpace = new Rectangle(p.getX(), p.getY(), p.getWidth(), p.getHeight());
+		levelsDone++;
+		score=calcScore(score,levelsDone);
+	}
+	
+	public int calcScore(int score, int levelsDone){
+		return score + 9 + levelsDone;
 	}
 	
 	public void start(int width, int height){
@@ -58,11 +94,17 @@ public class Game{
 		viewPointX=0;
 		viewPointY=-height+10;
 		safeGround=0;
+		blackSpace=null;
 		
 		rand = new Random();
-		addPlatform(new Platform(100, -200, rand, MAX_NUMBER, this));
+		generateLevel(-200);
+		generateLevel(-400);
+		generateLevel(-600);
 		player.setNumber(platformsToAdd.get(0).getResult());
 		ticksToExpand=-1;
+		ticksToDie=-1;
+		score = 0;
+		levelsDone = 0;
 	}
 	
 	public void paint(Graphics2D g, BufferedImage img){
@@ -71,10 +113,18 @@ public class Game{
 		g.setColor(Color.white);
 		g.fillRect(0, 0, img.getWidth(), img.getHeight());
 		
-		g.setColor(Color.black);
-		g.fillRect(0, safeGround-viewPointY, img.getWidth(), img.getHeight()-safeGround+viewPointY);
 		
-		if(blackSpace!=null) g.fill(blackSpace);
+		g.setColor(Color.black);
+		if(blackSpace!=null){
+			g.fillRect(blackSpace.x-viewPointX, blackSpace.y-viewPointY, blackSpace.width, blackSpace.height);
+			g.fillRect(0, oldSafeGround-viewPointY, img.getWidth(), img.getHeight()-oldSafeGround+viewPointY);
+		}
+		else{
+			g.fillRect(0, safeGround-viewPointY, img.getWidth(), img.getHeight()-safeGround+viewPointY);
+		}
+		
+		g.setFont(new Font("Arial",Font.PLAIN,30));
+		g.drawString(""+score, 10, g.getFontMetrics().getHeight()+5);
 		
 		for(Platform p : platforms){
 			p.paint(g, img, viewPointX, viewPointY);
@@ -85,10 +135,24 @@ public class Game{
 	
 	public void logic(){
 		if(ticksToExpand > 0){
-			blackSpace.x += (blackSpace.x)/ticksToExpand;
+			blackSpace.x -= (blackSpace.x)/ticksToExpand;
 			blackSpace.width += (blackSpace.x)/ticksToExpand + (m.getWidth() - blackSpace.x-blackSpace.width)/ticksToExpand;
 			blackSpace.height += (m.getHeight() + viewPointY - blackSpace.y - blackSpace.height)/ticksToExpand;
+			viewPointY += (safeGround-m.getHeight()-viewPointY+50)/ticksToExpand;
 			ticksToExpand--;
+		}
+		if(ticksToExpand==0){
+			blackSpace=null;
+			viewPointY=safeGround-m.getHeight()+50;
+			ticksToExpand=-1;
+			ticksToDie=DYING_TICKS;
+		}
+		if(ticksToDie > 0 && ticksToExpand == -1){
+			viewPointY = safeGround-m.getHeight()+50-(int)(50f*(DYING_TICKS-ticksToDie)/DYING_TICKS);
+			ticksToDie--;
+		}
+		if(ticksToDie==0){
+			System.exit(0);
 		}
 		player.logic(safeGround);
 		for(Platform p : platformsToAdd){
