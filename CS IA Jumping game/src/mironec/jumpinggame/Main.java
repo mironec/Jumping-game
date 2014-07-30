@@ -122,14 +122,14 @@ public class Main extends Applet implements KeyListener{
 
 	@Override
 	public void keyPressed(KeyEvent e) {
-		if(e.getKeyCode()>=0&&e.getKeyCode()<=keys.length){
+		if(e.getKeyCode()>=0&&e.getKeyCode()<keys.length){
 			keys[e.getKeyCode()]=true;
 		}
 	}
 
 	@Override
 	public void keyReleased(KeyEvent e) {
-		if(e.getKeyCode()>=0&&e.getKeyCode()<=keys.length){
+		if(e.getKeyCode()>=0&&e.getKeyCode()<keys.length){
 			keys[e.getKeyCode()]=false;
 		}
 	}
