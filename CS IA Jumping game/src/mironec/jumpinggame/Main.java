@@ -27,9 +27,16 @@ public class Main extends Applet implements KeyListener{
 	private static final int TICK_MS = 20;			//Tick in miliseconds, for logic
 	private Game game;
 	
+	/**
+	 * Keys[keyCode] is true if the key with the corresponding keyCode is held down.
+	 * Used to tell which keys are currently pressed.
+	 */
 	public boolean keys[];
 
-	
+	/**
+	 * Creates a frame with the applet inside.
+	 * @param args do nothing
+	 */
 	public static void main(String[] args) {
 		Frame f = new Frame("Jumping game");
 		f.addWindowListener(new WindowAdapter() {
@@ -96,12 +103,18 @@ public class Main extends Applet implements KeyListener{
 	}
 	
 	//Tick 20ms
+	/**
+	 * Handles the logic of the application, usually just calls game logic.
+	 */
 	private void logic(){
 		if(renderMode == RENDER_MODE_GAME && game != null){
 			game.logic();
 		}
 	}
 	
+	/**
+	 * Handles the render of the application, usually just calls game render and handles backbuffers.
+	 */
 	private void render(){
 		if(renderMode == RENDER_MODE_GAME && game != null){
 			game.paint((Graphics2D)backBufferG);

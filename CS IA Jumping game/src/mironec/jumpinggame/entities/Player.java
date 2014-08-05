@@ -36,7 +36,13 @@ public class Player {
 	}
 	
 	//Tick 20ms
-	public void logic(){
+	/**
+	 * Handles some of the logic that applies to the player.
+	 * logic(int safeGround) handles all the logic.
+	 * 
+	 * Applies gravity, friction, jumps and moves to the sides.
+	 */
+	private void logic(){
 		if(g.getMain().keys[KeyEvent.VK_RIGHT]){velX+=2.0;}
 		if(g.getMain().keys[KeyEvent.VK_LEFT]){velX-=2.0;}
 		if(g.getMain().keys[KeyEvent.VK_UP]&&isJumping==false){velY=-JUMPING_FORCE; isJumping=true;}
@@ -48,10 +54,21 @@ public class Player {
 		this.velX = velX*(1-Game.FRICTION);
 	}
 	
+	/**
+	 * If the player is going in the Y+ direction, he is falling.
+	 * 
+	 * @return Returns true if the player is falling.
+	 */
 	public boolean isFalling(){
 		return velY>0;
 	}
 	
+	/**
+	 * Handles all the rendering concerning the player
+	 * @param g Graphics used to draw.
+	 * @param viewPointX offset used in the X direction.
+	 * @param viewPointY offset used in the Y direction.
+	 */
 	public void paint(Graphics2D g, int viewPointX, int viewPointY){
 		g.setColor(Color.black);
 		g.fillOval(x-viewPointX, y-viewPointY, width, height);
@@ -62,6 +79,11 @@ public class Player {
 		g.drawString(str, x-viewPointX+width/2-g.getFontMetrics().stringWidth(str)/2, y-viewPointY+height-10);
 	}
 	
+	/**
+	 * Handles all the logic concerning the player.
+	 * 
+	 * @param safeGround the y coordinate of the safeGround used in Game.
+	 */
 	public void logic(int safeGround){
 		logic();
 		if(precY+height>safeGround){

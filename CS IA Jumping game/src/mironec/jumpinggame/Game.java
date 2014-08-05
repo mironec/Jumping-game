@@ -43,6 +43,11 @@ public class Game{
 		this.m=m;
 	}
 	
+	/**
+	 * Generates 2-4 platforms on the specified coordinates.
+	 * 
+	 * @param y The y level at which to generate the platforms. The top of the platforms will rest at this level.
+	 */
 	public void generateLevel(int y){
 		int numOfPlatforms = rand.nextInt(3) + 2; //2-4
 		
@@ -65,6 +70,11 @@ public class Game{
 		
 	}
 	
+	/**
+	 * Raises the safeground to the given level.
+	 * @param y The y coordinate where to raise the safe ground.
+	 * @param p The platform that caused the expansion.
+	 */
 	public void raiseSafeGround(int y, Platform p){
 		oldSafeGround=safeGround;
 		safeGround=y;
@@ -81,6 +91,13 @@ public class Game{
 		score=calcScore(score,levelsDone);
 	}
 	
+	/**
+	 * Calculates the score after clearing  a platform.
+	 * 
+	 * @param score Initial score
+	 * @param levelsDone Levels done until now
+	 * @return
+	 */
 	public int calcScore(int score, int levelsDone){
 		return score + 9 + levelsDone;
 	}
