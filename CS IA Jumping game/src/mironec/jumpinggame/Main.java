@@ -104,7 +104,7 @@ public class Main extends Applet implements KeyListener{
 	
 	private void render(){
 		if(renderMode == RENDER_MODE_GAME && game != null){
-			game.paint((Graphics2D)backBufferG, (BufferedImage)backBuffer);
+			game.paint((Graphics2D)backBufferG);
 		}
 		
 		frontBufferG.drawImage(backBuffer, 0, 0, this);

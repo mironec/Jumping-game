@@ -4,7 +4,6 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
-import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import mironec.jumpinggame.Game;
@@ -52,14 +51,15 @@ public class Platform {
 	/**
 	 * 
 	 * @param g The graphics supplied from the Game, used to paint into its canvas
-	 * @param img The image supplied from the Game, used for its width and height
+	 * @param gwidth The width of the Game canvas.
+	 * @param gheight The height of the Game canvas.
 	 * @param viewPointX The viewpoint of the Game, to offset the drawing
 	 * @param viewPointY The viewpoint of the Game, to offset the drawing
 	 */
-	public void paint(Graphics2D g, BufferedImage img, int viewPointX, int viewPointY){
-		if(x>img.getWidth()+viewPointX){return;}
+	public void paint(Graphics2D g, int gwidth, int gheight, int viewPointX, int viewPointY){
+		if(x>gwidth+viewPointX){return;}
 		if(x+width<viewPointX){return;}
-		if(y>img.getHeight()+viewPointY){return;}
+		if(y>gheight+viewPointY){return;}
 		if(y+height<viewPointY){return;}
 		
 		g.setColor(Color.black);

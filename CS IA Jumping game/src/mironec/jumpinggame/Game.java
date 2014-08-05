@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
-import java.awt.image.BufferedImage;
 import java.util.ArrayList;
 import java.util.Random;
 
@@ -38,6 +37,7 @@ public class Game{
 	private Rectangle blackSpace;
 	private int score;
 	private int levelsDone;
+	private int width, height;
 	
 	public Game(Main m){
 		this.m=m;
@@ -85,10 +85,19 @@ public class Game{
 		return score + 9 + levelsDone;
 	}
 	
+	/**
+	 * Required to start the game. Initializes variables and generates starting platforms.
+	 * 
+	 * @param width The width of the screen where the game will be played.
+	 * @param height The height of the screnn where the game will be played.
+	 */
 	public void start(int width, int height){
 		platforms = new ArrayList<Platform>();
 		platformsToAdd = new ArrayList<Platform>();
 		platformsToRemove = new ArrayList<Platform>();
+		
+		this.width = width;
+		this.height = height;
 		
 		player = new Player(width/2-PLAYER_WIDTH/2, -PLAYER_HEIGHT, this);
 		viewPointX=0;
@@ -97,9 +106,9 @@ public class Game{
 		blackSpace=null;
 		
 		rand = new Random();
-		generateLevel(-200);
-		generateLevel(-400);
-		generateLevel(-600);
+		for(int y=-200;y>-height-200;y-=200){
+			generateLevel(y);
+		}
 		player.setNumber(platformsToAdd.get(0).getResult());
 		ticksToExpand=-1;
 		ticksToDie=-1;
@@ -107,33 +116,41 @@ public class Game{
 		levelsDone = 0;
 	}
 	
-	public void paint(Graphics2D g, BufferedImage img){
+	/**
+	 * All rendering concerning the game is handled here.
+	 * @param g The graphics the game uses to render.
+	 */
+	public void paint(Graphics2D g){
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		
 		g.setColor(Color.white);
-		g.fillRect(0, 0, img.getWidth(), img.getHeight());
+		g.fillRect(0, 0, width, height);
 		
 		
 		g.setColor(Color.black);
 		if(blackSpace!=null){
 			g.fillRect(blackSpace.x-viewPointX, blackSpace.y-viewPointY, blackSpace.width, blackSpace.height);
-			g.fillRect(0, oldSafeGround-viewPointY, img.getWidth(), img.getHeight()-oldSafeGround+viewPointY);
+			g.fillRect(0, oldSafeGround-viewPointY, width, height-oldSafeGround+viewPointY);
 		}
 		else{
-			g.fillRect(0, safeGround-viewPointY, img.getWidth(), img.getHeight()-safeGround+viewPointY);
+			g.fillRect(0, safeGround-viewPointY, width, height-safeGround+viewPointY);
 		}
 		
 		g.setFont(new Font("Arial",Font.PLAIN,30));
 		g.drawString(""+score, 10, g.getFontMetrics().getHeight()+5);
 		
 		for(Platform p : platforms){
-			p.paint(g, img, viewPointX, viewPointY);
+			p.paint(g, width, height, viewPointX, viewPointY);
 		}
-		player.paint(g, img, viewPointX, viewPointY);
+		player.paint(g, viewPointX, viewPointY);
 		
 	}
 	
+	/**
+	 * All logic concerning the game is handled here.
+	 */
 	public void logic(){
+		//Expanding of a platform
 		if(ticksToExpand > 0){
 			blackSpace.x -= (blackSpace.x)/ticksToExpand;
 			blackSpace.width += (blackSpace.x)/ticksToExpand + (m.getWidth() - blackSpace.x-blackSpace.width)/ticksToExpand;
@@ -141,19 +158,23 @@ public class Game{
 			viewPointY += (safeGround-m.getHeight()-viewPointY+50)/ticksToExpand;
 			ticksToExpand--;
 		}
+		//Finished expanding
 		if(ticksToExpand==0){
 			blackSpace=null;
 			viewPointY=safeGround-m.getHeight()+50;
 			ticksToExpand=-1;
 			ticksToDie=DYING_TICKS;
 		}
+		//Movement of the screen downwards with passing time
 		if(ticksToDie > 0 && ticksToExpand == -1){
 			viewPointY = safeGround-m.getHeight()+50-(int)(50f*(DYING_TICKS-ticksToDie)/DYING_TICKS);
 			ticksToDie--;
 		}
+		//Dying by running out of time
 		if(ticksToDie==0){
 			System.exit(0);
 		}
+		//Logic of player and platforms
 		player.logic(safeGround);
 		for(Platform p : platformsToAdd){
 			platforms.add(p);
@@ -168,14 +189,26 @@ public class Game{
 		}
 	}
 	
+	/**
+	 * Adds a platform to the game.
+	 * @param p The platform to add.
+	 */
 	public void addPlatform(Platform p){
 		platformsToAdd.add(p);
 	}
 	
+	/**
+	 * Removes a platform from the game.
+	 * @param p The platform to remove.
+	 */
 	public void removePlatform(Platform p){
 		platformsToRemove.add(p);
 	}
 	
+	/**
+	 * Loses the game.
+	 * Currently closes the window forcefully.
+	 */
 	public void lose(){
 		System.exit(0);
 	}

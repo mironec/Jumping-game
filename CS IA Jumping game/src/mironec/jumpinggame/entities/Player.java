@@ -5,7 +5,6 @@ import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
-import java.awt.image.BufferedImage;
 
 import mironec.jumpinggame.Game;
 
@@ -53,7 +52,7 @@ public class Player {
 		return velY>0;
 	}
 	
-	public void paint(Graphics2D g, BufferedImage img, int viewPointX, int viewPointY){
+	public void paint(Graphics2D g, int viewPointX, int viewPointY){
 		g.setColor(Color.black);
 		g.fillOval(x-viewPointX, y-viewPointY, width, height);
 		
