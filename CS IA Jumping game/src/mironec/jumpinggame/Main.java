@@ -1,6 +1,7 @@
 package mironec.jumpinggame;
 
 import java.applet.Applet;
+import java.awt.Color;
 import java.awt.Frame;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
@@ -24,7 +25,11 @@ public class Main extends Applet implements KeyListener{
 	
 	private int renderMode;
 	private static final int RENDER_MODE_GAME = 0;
-	private static final int TICK_MS = 20;			//Tick in miliseconds, for logic
+	private static final int RENDER_MODE_PAUSED_GAME = 1;
+	/**
+	 * Time for one logic cycle measured in miliseconds.
+	 */
+	private static final int TICK_MS = 20;
 	private Game game;
 	
 	/**
@@ -76,7 +81,7 @@ public class Main extends Applet implements KeyListener{
 						frames=0;
 					}
 					while(System.nanoTime() - lastRenderTime < 15660 * 1000){
-						Thread.yield();
+						//Thread.yield();
 						try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
@@ -119,6 +124,11 @@ public class Main extends Applet implements KeyListener{
 		if(renderMode == RENDER_MODE_GAME && game != null){
 			game.paint((Graphics2D)backBufferG);
 		}
+		if(renderMode == RENDER_MODE_PAUSED_GAME && game != null){
+			game.paint((Graphics2D)backBufferG);
+			backBufferG.setColor(new Color(1.0f, 1.0f, 1.0f, 0.8f));
+			backBufferG.fillRect(0, 0, getWidth(), getHeight());
+		}
 		
 		frontBufferG.drawImage(backBuffer, 0, 0, this);
 	}
@@ -137,6 +147,10 @@ public class Main extends Applet implements KeyListener{
 	public void keyPressed(KeyEvent e) {
 		if(e.getKeyCode()>=0&&e.getKeyCode()<keys.length){
 			keys[e.getKeyCode()]=true;
+		}
+		//Pausing the game by pressing escape
+		if(e.getKeyCode()==KeyEvent.VK_ESCAPE){
+			renderMode= (renderMode==RENDER_MODE_GAME?RENDER_MODE_PAUSED_GAME:RENDER_MODE_GAME);
 		}
 	}
 
