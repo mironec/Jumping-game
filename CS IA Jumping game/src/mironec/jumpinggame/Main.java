@@ -14,7 +14,7 @@ import java.awt.image.BufferedImage;
 
 public class Main extends Applet implements KeyListener{
 	
-	private static final long serialVersionUID = 1L;
+	private static final long serialVersionUID = 2L;
 	
 	private Image frontBuffer,backBuffer;
 	private Graphics frontBufferG,backBufferG;
