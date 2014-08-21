@@ -12,6 +12,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
+import mironec.jumpinggame.entities.MenuButton;
+
 public class Main extends Applet implements KeyListener{
 	
 	private static final long serialVersionUID = 2L;
@@ -22,6 +24,7 @@ public class Main extends Applet implements KeyListener{
 	long lastSecond=0;
 	long lastRenderTime;
 	long lastLogicTime;
+	private Localization locale;
 	
 	private int renderMode;
 	private static final int RENDER_MODE_GAME = 0;
@@ -67,6 +70,8 @@ public class Main extends Applet implements KeyListener{
 		keys = new boolean[256];
 		addKeyListener(this);
 		
+		locale = new Localization("EN");
+		
 		Thread t = new Thread(){
 			@Override
 			public void run() {
@@ -95,7 +100,7 @@ public class Main extends Applet implements KeyListener{
 					else{lastLogicTime+=TICK_MS*1000*1000;}
 					logic();
 					while(System.nanoTime() - lastLogicTime < TICK_MS * 1000 * 1000){
-						Thread.yield();
+						//Thread.yield();
 						try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
@@ -128,6 +133,9 @@ public class Main extends Applet implements KeyListener{
 			game.paint((Graphics2D)backBufferG);
 			backBufferG.setColor(new Color(1.0f, 1.0f, 1.0f, 0.8f));
 			backBufferG.fillRect(0, 0, getWidth(), getHeight());
+			new MenuButton(locale.getWord("resume"),getWidth()/5,getHeight()/9*2,getWidth()/5*3,getHeight()/9).paint((Graphics2D) backBufferG);
+			new MenuButton(locale.getWord("highscores"),getWidth()/5,getHeight()/9*4,getWidth()/5*3,getHeight()/9).paint((Graphics2D) backBufferG);
+			new MenuButton(locale.getWord("exit"),getWidth()/5,getHeight()/9*6,getWidth()/5*3,getHeight()/9).paint((Graphics2D) backBufferG);
 		}
 		
 		frontBufferG.drawImage(backBuffer, 0, 0, this);

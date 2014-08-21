@@ -156,7 +156,7 @@ public class Game{
 		g.setFont(new Font("Arial",Font.PLAIN,30));
 		g.drawString(""+score, 10, g.getFontMetrics().getHeight()+5);
 		
-		for(Platform p : platforms){
+		for(Platform p : new ArrayList<Platform>(platforms)){
 			p.paint(g, width, height, viewPointX, viewPointY);
 		}
 		player.paint(g, viewPointX, viewPointY);
