@@ -4,7 +4,9 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
 import java.awt.event.KeyEvent;
+import java.awt.image.BufferedImage;
 
 import mironec.jumpinggame.Game;
 
@@ -18,7 +20,8 @@ public class Player {
 	private Game g;
 	private int number;
 	
-	private static final float JUMPING_FORCE = 20.0F; 
+	private static final float JUMPING_FORCE = 22.0F;
+	private BufferedImage image;
 	
 	public Player(int x, int y, Game g) {
 		this.x = x; precX = x;
@@ -33,6 +36,9 @@ public class Player {
 		number = -1;
 		
 		this.g = g;
+		
+		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		constructImage();
 	}
 	
 	//Tick 20ms
@@ -46,8 +52,8 @@ public class Player {
 		if(g.getMain().keys[KeyEvent.VK_RIGHT]){velX+=2.0;}
 		if(g.getMain().keys[KeyEvent.VK_LEFT]){velX-=2.0;}
 		if(g.getMain().keys[KeyEvent.VK_UP]&&isJumping==false){velY=-JUMPING_FORCE; isJumping=true;}
-		this.precX += velX;
-		this.precY += velY - Game.GRAVITY/2;
+		this.precX += velX - (velX*Game.FRICTION)/2;
+		this.precY += velY + Game.GRAVITY/2;
 		this.x = (int)precX;
 		this.y = (int)precY;
 		this.velY += Game.GRAVITY;
@@ -64,19 +70,28 @@ public class Player {
 	}
 	
 	/**
+	 * Construct the image for the player. Needed in the paint(g) function. Usually called in the constructor and when setting a new number.
+	 */
+	private void constructImage(){
+		Graphics2D g = (Graphics2D)image.getGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		g.setColor(Color.black);
+		g.fillOval(0, 0, width, height);
+		
+		g.setColor(Color.white);
+		g.setFont(new Font("Arial",Font.PLAIN,height-10));
+		String str = ""+number;
+		g.drawString(str, width/2-g.getFontMetrics().stringWidth(str)/2, height-10);
+	}
+	
+	/**
 	 * Handles all the rendering concerning the player
 	 * @param g Graphics used to draw.
 	 * @param viewPointX offset used in the X direction.
 	 * @param viewPointY offset used in the Y direction.
 	 */
 	public void paint(Graphics2D g, int viewPointX, int viewPointY){
-		g.setColor(Color.black);
-		g.fillOval(x-viewPointX, y-viewPointY, width, height);
-		
-		g.setColor(Color.white);
-		g.setFont(new Font("Arial",Font.PLAIN,height-10));
-		String str = ""+number;
-		g.drawString(str, x-viewPointX+width/2-g.getFontMetrics().stringWidth(str)/2, y-viewPointY+height-10);
+		g.drawImage(image, null, x-viewPointX, y-viewPointY);
 	}
 	
 	/**
@@ -88,7 +103,7 @@ public class Player {
 		logic();
 		if(precY+height>safeGround){
 			precY=y=safeGround-height;
-			if(velY>10.0F){
+			if(velY>5.0F){
 				velY=-velY*0.5F;
 			}
 			else{
@@ -126,6 +141,7 @@ public class Player {
 
 	public void setNumber(int number) {
 		this.number = number;
+		constructImage();
 	}
 
 }

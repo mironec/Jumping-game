@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
 import java.awt.Rectangle;
+import java.awt.RenderingHints;
+import java.awt.image.BufferedImage;
 import java.util.Random;
 
 import mironec.jumpinggame.Game;
@@ -17,6 +19,8 @@ public class Platform {
 	private static final int OPERATION_MINUS = 1;
 	
 	private Game g;
+	
+	private BufferedImage image;
 	
 	/**
 	 * 
@@ -45,8 +49,26 @@ public class Platform {
 		}
 		result = calcResult();
 		this.g = g;
+		
+		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+		constructImage();
 	}
 	
+	/**
+	 * Constructs the image for this platform. Needed for paint(g). Called in the constructor.
+	 */
+	private void constructImage(){
+		Graphics2D g = (Graphics2D)image.getGraphics();
+		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
+		
+		g.setColor(Color.black);
+		g.fillRect(0, 0, width, height);
+		
+		g.setColor(Color.white);
+		g.setFont(new Font("Arial",Font.PLAIN,height-4));
+		String str = number1+(operation==OPERATION_MINUS?"-":"+")+number2;
+		g.drawString(str, width/2-g.getFontMetrics().stringWidth(str)/2, height-4);
+	}
 	
 	/**
 	 * 
@@ -62,13 +84,7 @@ public class Platform {
 		if(y>gheight+viewPointY){return;}
 		if(y+height<viewPointY){return;}
 		
-		g.setColor(Color.black);
-		g.fillRect(x-viewPointX, y-viewPointY, width, height);
-		
-		g.setColor(Color.white);
-		g.setFont(new Font("Arial",Font.PLAIN,height-4));
-		String str = number1+(operation==OPERATION_MINUS?"-":"+")+number2;
-		g.drawString(str, x+width/2-g.getFontMetrics().stringWidth(str)/2-viewPointX, y-viewPointY+height-4);
+		g.drawImage(image, null, x-viewPointX, y-viewPointY);
 	}
 	
 	/**

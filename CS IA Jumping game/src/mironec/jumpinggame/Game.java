@@ -22,6 +22,11 @@ public class Game{
 	public static final int EXPANDING_TICKS = 25;
 	public static final int DYING_TICKS = 500;
 	private static final int MIN_SPACE = 30;
+	private static final int HEIGHT_BETWEEN_PLATFORMS = 200;
+	/**
+	 * How many levels of platforms are visible on the screen at the same time.
+	 */
+	private static int LEVELS_VISIBLE = 3;
 	
 	private ArrayList<Platform> platforms;
 	private ArrayList<Platform> platformsToAdd;
@@ -81,10 +86,10 @@ public class Game{
 		ArrayList<Platform> avail = new ArrayList<Platform>();
 		for(Platform pe : platforms){
 			if(pe.getY()>=y){removePlatform(pe);}
-			if(pe.getY()>=y-200&&pe.getY()<y){avail.add(pe);}
+			if(pe.getY()>=y-HEIGHT_BETWEEN_PLATFORMS&&pe.getY()<y){avail.add(pe);}
 		}
 		player.setNumber(avail.get(rand.nextInt(avail.size())).getResult());
-		generateLevel(y-600);
+		generateLevel(y-HEIGHT_BETWEEN_PLATFORMS*LEVELS_VISIBLE);
 		ticksToExpand = EXPANDING_TICKS;
 		blackSpace = new Rectangle(p.getX(), p.getY(), p.getWidth(), p.getHeight());
 		levelsDone++;
@@ -96,7 +101,7 @@ public class Game{
 	 * 
 	 * @param score Initial score
 	 * @param levelsDone Levels done until now
-	 * @return
+	 * @return returns the new score
 	 */
 	public int calcScore(int score, int levelsDone){
 		return score + 9 + levelsDone;
@@ -123,7 +128,9 @@ public class Game{
 		blackSpace=null;
 		
 		rand = new Random();
-		for(int y=-200;y>-height-200;y-=200){
+		LEVELS_VISIBLE=0;
+		for(int y=-HEIGHT_BETWEEN_PLATFORMS;y>-height-HEIGHT_BETWEEN_PLATFORMS;y-=HEIGHT_BETWEEN_PLATFORMS){
+			LEVELS_VISIBLE++;
 			generateLevel(y);
 		}
 		player.setNumber(platformsToAdd.get(0).getResult());
@@ -189,7 +196,7 @@ public class Game{
 		}
 		//Dying by running out of time
 		if(ticksToDie==0){
-			System.exit(0);
+			lose();
 		}
 		//Logic of player and platforms
 		player.logic(safeGround);
