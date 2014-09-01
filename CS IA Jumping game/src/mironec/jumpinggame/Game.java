@@ -231,10 +231,19 @@ public class Game{
 	
 	/**
 	 * Loses the game.
-	 * Currently closes the window forcefully.
+	 * Tries to write into highscores.
 	 */
 	public void lose(){
-		System.exit(0);
+		if(m.getHighscores().isScoreEligibleForHighscores(score)){
+			m.showHighscoreEnter();
+		}
+		else
+			m.showGameOver();
+		m.startGame();
+	}
+	
+	public int getScore(){
+		return score;
 	}
 	
 	public Main getMain(){

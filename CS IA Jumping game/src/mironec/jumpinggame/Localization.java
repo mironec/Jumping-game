@@ -15,6 +15,12 @@ public class Localization {
 		put("resume", new String[]{"resume","Resume","Spä do hry"});
 		put("highscores", new String[]{"highscores","High scores","Vysoké skóre"});
 		put("exit", new String[]{"exit","Exit","Ukonèi"});
+		put("enteryourname", new String[]{"enteryourname","Enter your name:","Napíšte svoje meno:"});
+		put("submit", new String[]{"submit","Submit","Odosla"});
+		put("return", new String[]{"return","Return","Vráti sa"});
+		put("reset", new String[]{"reset","Reset high scores","Vynulova vysoké skóre"});
+		put("playAgain", new String[]{"playAgain","Play again","Hra znovu"});
+		put("gameOver", new String[]{"gameOver","Game over","Prehra"});
 	}};
 	
 	private String locale;

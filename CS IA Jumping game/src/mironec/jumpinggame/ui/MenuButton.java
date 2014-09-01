@@ -15,6 +15,8 @@ public class MenuButton implements MouseListener {
 	private int x,y;
 	private int width,height;
 	private BufferedImage image;
+	private boolean drawBorder;
+	private boolean whiteText;
 	
 	public MenuButton(String text, int x, int y, int width, int height){
 		this.text = text;
@@ -22,6 +24,9 @@ public class MenuButton implements MouseListener {
 		this.y = y;
 		this.width = width;
 		this.height = height;
+		
+		drawBorder = false;
+		whiteText = true;
 		
 		image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
 		constructImage();
@@ -33,10 +38,17 @@ public class MenuButton implements MouseListener {
 	private void constructImage(){
 		Graphics2D g = (Graphics2D)image.getGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
-		g.setColor(Color.black);
-		g.fillRect(0, 0, width, height);
-		g.setColor(Color.white);
-		g.setFont(new Font("Arial", Font.PLAIN, 40));
+		if(drawBorder){
+			g.setColor(whiteText?Color.white:Color.black);
+			g.fillRect(0, 0, width, height);
+		}
+		g.setColor(whiteText?Color.black:Color.white);
+		if(drawBorder)
+			g.fillRect(2, 2, width-4, height-4);
+		else
+			g.fillRect(0, 0, width, height);
+		g.setColor(whiteText?Color.white:Color.black);
+		g.setFont(new Font("Arial", Font.PLAIN, height-height/5));
 		g.drawString(text, width/2-g.getFontMetrics().stringWidth(text)/2, height/2+g.getFontMetrics().getHeight()/4);
 	}
 	
@@ -72,6 +84,24 @@ public class MenuButton implements MouseListener {
 	
 	private Rectangle getBounds() {
 		return new Rectangle(x,y,width,height);
+	}
+
+	public boolean isDrawBorder() {
+		return drawBorder;
+	}
+
+	public void setDrawBorder(boolean drawBorder) {
+		this.drawBorder = drawBorder;
+		constructImage();
+	}
+
+	public boolean isWhiteText() {
+		return whiteText;
+	}
+
+	public void setWhiteText(boolean whiteText) {
+		this.whiteText = whiteText;
+		constructImage();
 	}
 	
 }

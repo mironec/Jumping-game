@@ -15,8 +15,8 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.awt.image.BufferedImage;
 
+import mironec.jumpinggame.ui.Highscores;
 import mironec.jumpinggame.ui.MenuButton;
-import mironec.jumpinggame.ui.ScoreEntry;
 
 public class Main extends Applet implements KeyListener, MouseListener {
 	
@@ -29,12 +29,15 @@ public class Main extends Applet implements KeyListener, MouseListener {
 	long lastRenderTime;
 	long lastLogicTime;
 	private Localization locale;
-	private MenuButton resume,highscores,exit;
-	
+	private MenuButton resume,highscores,exit,playAgain;
+	private Highscores highscoresMenu;
+
 	private int renderMode;
-	private static final int RENDER_MODE_GAME = 0;
-	private static final int RENDER_MODE_PAUSED_GAME = 1;
-	private static final int RENDER_MODE_HIGHSCORES = 2;
+	public static final int RENDER_MODE_GAME = 0;
+	public static final int RENDER_MODE_PAUSED_GAME = 1;
+	public static final int RENDER_MODE_HIGHSCORES = 2;
+	public static final int RENDER_MODE_HIGHSCORE_ENTER = 3;
+	public static final int RENDER_MODE_GAME_OVER = 4;
 	/**
 	 * Time for one logic cycle measured in miliseconds.
 	 */
@@ -78,6 +81,7 @@ public class Main extends Applet implements KeyListener, MouseListener {
 		addMouseListener(this);
 		
 		locale = new Localization("EN");
+		highscoresMenu = new Highscores(this);
 		
 		Thread t = new Thread(){
 			@Override
@@ -113,11 +117,15 @@ public class Main extends Applet implements KeyListener, MouseListener {
 				}
 			}
 		};
-		game = new Game(this);
-		game.start(getWidth(), getHeight());
+		startGame();
 		t.start();
 		logic.start();
-		//pauseGame();
+		pauseGame();
+	}
+	
+	public void startGame(){
+		game = new Game(this);
+		game.start(getWidth(), getHeight());
 	}
 	
 	//Tick 20ms
@@ -147,30 +155,25 @@ public class Main extends Applet implements KeyListener, MouseListener {
 			exit.paint((Graphics2D) backBufferG);
 		}
 		if(renderMode == RENDER_MODE_HIGHSCORES){
-			backBufferG.setColor(Color.black);
-			backBufferG.fillRect(0, 0, getWidth(), getHeight());
-			
+			highscoresMenu.paint((Graphics2D) backBufferG);
+		}
+		if(renderMode == RENDER_MODE_HIGHSCORE_ENTER){
+			highscoresMenu.paint((Graphics2D) backBufferG);
+		}
+		if(renderMode == RENDER_MODE_GAME_OVER){
 			backBufferG.setColor(Color.white);
-			backBufferG.setFont(new Font("Arial", Font.PLAIN, Game.PLATFORM_HEIGHT*2));
-			String str = locale.getWord("highscores");
-			backBufferG.drawString(str, getWidth()/2-backBufferG.getFontMetrics().stringWidth(str)/2, backBufferG.getFontMetrics().getHeight());
-			ScoreEntry[] scores = loadHighscores();
-			for(int x=0;x<scores.length;x++){
-				backBufferG.drawString((x+1)+". "+scores[x].getName(), 50, 150+x*50);
-				backBufferG.drawString(""+scores[x].getScore(), getWidth()-50-backBufferG.getFontMetrics().stringWidth(""+scores[x].getScore()), 150+x*50);
-			}
+			backBufferG.fillRect(0, 0, getWidth(), getHeight());
+			backBufferG.setColor(Color.black);
+			backBufferG.setFont(new Font("Arial", Font.PLAIN, (int)(Game.PLAYER_HEIGHT*1.5)));
+			String str = locale.getWord("gameOver");
+			backBufferG.drawString(str, getWidth()/2-backBufferG.getFontMetrics().stringWidth(str)/2, Game.PLATFORM_HEIGHT*3);
+			
+			playAgain.paint((Graphics2D) backBufferG);
+			highscores.paint((Graphics2D) backBufferG);
+			exit.paint((Graphics2D) backBufferG);
 		}
 		
 		frontBufferG.drawImage(backBuffer, 0, 0, this);
-	}
-	
-	private ScoreEntry[] loadHighscores(){
-		ScoreEntry[] scores = {new ScoreEntry("Miron", 1000),
-				new ScoreEntry("Miron", 700),
-				new ScoreEntry("Miron", 250),
-				new ScoreEntry("NieMiron", 150),
-				new ScoreEntry("AnoMiron", 50)};
-		return scores;
 	}
 	
 	@Override
@@ -193,10 +196,47 @@ public class Main extends Applet implements KeyListener, MouseListener {
 			if(renderMode==RENDER_MODE_GAME) pauseGame();
 			else if(renderMode==RENDER_MODE_PAUSED_GAME) unpauseGame();
 			else if(renderMode==RENDER_MODE_HIGHSCORES) unpauseGame();
+			else if(renderMode==RENDER_MODE_HIGHSCORE_ENTER) unpauseGame();
+			else if(renderMode==RENDER_MODE_GAME_OVER) unpauseGame();
 		}
 	}
 
-	private void showHighscores(){
+	/**
+	 * Shows the game over screen.
+	 */
+	public void showGameOver(){
+		playAgain = new MenuButton(locale.getWord("playAgain"),getWidth()/5,getHeight()/9*2,getWidth()/5*3,getHeight()/9){
+			public void buttonAction(){
+				unpauseGame();
+			}
+		};
+		highscores = new MenuButton(locale.getWord("highscores"),getWidth()/5,getHeight()/9*4,getWidth()/5*3,getHeight()/9){
+			public void buttonAction(){
+				showHighscores();
+			}
+		};
+		exit = new MenuButton(locale.getWord("exit"),getWidth()/5,getHeight()/9*6,getWidth()/5*3,getHeight()/9){
+			public void buttonAction() {
+				System.exit(0);
+			}
+		};
+		
+		renderMode = RENDER_MODE_GAME_OVER;
+	}
+	
+	/**
+	 * Shows a screen where the user can enter his name to be recorded in the highscores.
+	 */
+	public void showHighscoreEnter(){
+		highscoresMenu.showHighscoreEnter(game.getScore());
+		renderMode = RENDER_MODE_HIGHSCORE_ENTER;
+	}
+	
+	/**
+	 * Loads and then shows the highscores.
+	 */
+	public void showHighscores(){
+		highscoresMenu.showHighscores();
 		renderMode = RENDER_MODE_HIGHSCORES;
 	}
 	
@@ -227,7 +267,7 @@ public class Main extends Applet implements KeyListener, MouseListener {
 	 * Unpauses the game.
 	 * Hides the menu and resumes all timers.
 	 */
-	private void unpauseGame(){
+	public void unpauseGame(){
 		renderMode = RENDER_MODE_GAME;
 	}
 	
@@ -239,13 +279,24 @@ public class Main extends Applet implements KeyListener, MouseListener {
 	}
 
 	@Override
-	public void keyTyped(KeyEvent e) {		
+	public void keyTyped(KeyEvent e) {
+		if(renderMode == RENDER_MODE_HIGHSCORE_ENTER){
+			highscoresMenu.keyTyped(e);
+		}
 	}
 
 	@Override
 	public void mouseClicked(MouseEvent e) {
 		if(renderMode == RENDER_MODE_PAUSED_GAME){
 			resume.mouseClicked(e);
+			highscores.mouseClicked(e);
+			exit.mouseClicked(e);
+		}
+		if(renderMode == RENDER_MODE_HIGHSCORE_ENTER || renderMode == RENDER_MODE_HIGHSCORES){
+			highscoresMenu.mouseClicked(e);
+		}
+		if(renderMode == RENDER_MODE_GAME_OVER){
+			playAgain.mouseClicked(e);
 			highscores.mouseClicked(e);
 			exit.mouseClicked(e);
 		}
@@ -262,5 +313,21 @@ public class Main extends Applet implements KeyListener, MouseListener {
 
 	@Override
 	public void mouseReleased(MouseEvent e) {}
+	
+	public Localization getLocalization(){
+		return locale;
+	}
+	
+	public Highscores getHighscores() {
+		return highscoresMenu;
+	}
+	
+	public int getRenderMode(){
+		return renderMode;
+	}
+	
+	public Game getGame(){
+		return game;
+	}
 
 }
