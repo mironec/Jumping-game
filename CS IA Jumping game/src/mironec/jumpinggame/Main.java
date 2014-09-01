@@ -29,7 +29,7 @@ public class Main extends Applet implements KeyListener, MouseListener {
 	long lastRenderTime;
 	long lastLogicTime;
 	private Localization locale;
-	private MenuButton resume,highscores,exit,playAgain;
+	private MenuButton resume,highscores,exit,playAgain,sk,en;
 	private Highscores highscoresMenu;
 
 	private int renderMode;
@@ -97,7 +97,6 @@ public class Main extends Applet implements KeyListener, MouseListener {
 						frames=0;
 					}
 					while(System.nanoTime() - lastRenderTime < 15660 * 1000){
-						//Thread.yield();
 						try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
@@ -111,7 +110,6 @@ public class Main extends Applet implements KeyListener, MouseListener {
 					else{lastLogicTime+=TICK_MS*1000*1000;}
 					logic();
 					while(System.nanoTime() - lastLogicTime < TICK_MS * 1000 * 1000){
-						//Thread.yield();
 						try {Thread.sleep(1);} catch (InterruptedException e) {e.printStackTrace();}
 					}
 				}
@@ -153,6 +151,8 @@ public class Main extends Applet implements KeyListener, MouseListener {
 			resume.paint((Graphics2D) backBufferG);
 			highscores.paint((Graphics2D) backBufferG);
 			exit.paint((Graphics2D) backBufferG);
+			sk.paint((Graphics2D) backBufferG);
+			en.paint((Graphics2D) backBufferG);
 		}
 		if(renderMode == RENDER_MODE_HIGHSCORES){
 			highscoresMenu.paint((Graphics2D) backBufferG);
@@ -260,6 +260,18 @@ public class Main extends Applet implements KeyListener, MouseListener {
 				System.exit(0);
 			}
 		};
+		sk = new MenuButton("sk",5,5,Game.PLATFORM_HEIGHT*2,Game.PLATFORM_HEIGHT){
+			public void buttonAction() {
+				locale = new Localization("SK");
+				pauseGame();
+			}
+		};
+		en = new MenuButton("en",10+Game.PLATFORM_HEIGHT*2,5,Game.PLATFORM_HEIGHT*2,Game.PLATFORM_HEIGHT){
+			public void buttonAction() {
+				locale = new Localization("EN");
+				pauseGame();
+			}
+		};
 		renderMode = RENDER_MODE_PAUSED_GAME;
 	}
 	
@@ -291,6 +303,8 @@ public class Main extends Applet implements KeyListener, MouseListener {
 			resume.mouseClicked(e);
 			highscores.mouseClicked(e);
 			exit.mouseClicked(e);
+			sk.mouseClicked(e);
+			en.mouseClicked(e);
 		}
 		if(renderMode == RENDER_MODE_HIGHSCORE_ENTER || renderMode == RENDER_MODE_HIGHSCORES){
 			highscoresMenu.mouseClicked(e);

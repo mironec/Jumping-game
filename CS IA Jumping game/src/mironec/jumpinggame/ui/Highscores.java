@@ -48,10 +48,10 @@ public class Highscores implements KeyListener, MouseListener {
 	 */
 	public void paint(Graphics2D g){
 		if(m.getRenderMode() == Main.RENDER_MODE_HIGHSCORES){
-			g.setColor(Color.black);
+			g.setColor(Color.white);
 			g.fillRect(0, 0, m.getWidth(), m.getHeight());
 			
-			g.setColor(Color.white);
+			g.setColor(Color.black);
 			g.setFont(new Font("Arial", Font.PLAIN, Game.PLATFORM_HEIGHT*2));
 			String str = m.getLocalization().getWord("highscores");
 			g.drawString(str, m.getWidth()/2-g.getFontMetrics().stringWidth(str)/2, g.getFontMetrics().getHeight());
@@ -87,8 +87,8 @@ public class Highscores implements KeyListener, MouseListener {
 				saveHighscores();
 			}
 		};
-		reset.setDrawBorder(true);
-		reset.setWhiteText(true);
+		//reset.setDrawBorder(true);
+		//reset.setWhiteText(false);
 		
 		returnu = new MenuButton(m.getLocalization().getWord("return"), m.getWidth()/2-Game.PLATFORM_WIDTH*2, Game.PLATFORM_HEIGHT*16, Game.PLATFORM_WIDTH*4, Game.PLATFORM_HEIGHT*2){
 			@Override
@@ -96,8 +96,8 @@ public class Highscores implements KeyListener, MouseListener {
 				m.unpauseGame();
 			}
 		};
-		returnu.setDrawBorder(true);
-		returnu.setWhiteText(true);
+		//returnu.setDrawBorder(true);
+		//returnu.setWhiteText(false);
 	}
 	
 	public void showHighscoreEnter(int score){
@@ -112,8 +112,8 @@ public class Highscores implements KeyListener, MouseListener {
 				m.showHighscores();
 			}
 		};
-		submit.setDrawBorder(true);
-		submit.setWhiteText(false);
+		//submit.setDrawBorder(true);
+		//submit.setWhiteText(false);
 		
 		returnu = new MenuButton(m.getLocalization().getWord("return"), m.getWidth()/2-Game.PLATFORM_WIDTH*2, m.getHeight()/2+Game.PLATFORM_HEIGHT*7, Game.PLATFORM_WIDTH*4, Game.PLATFORM_HEIGHT*2){
 			@Override
@@ -121,8 +121,8 @@ public class Highscores implements KeyListener, MouseListener {
 				m.unpauseGame();
 			}
 		};
-		returnu.setDrawBorder(true);
-		returnu.setWhiteText(false);
+		//returnu.setDrawBorder(true);
+		//returnu.setWhiteText(false);
 	}
 	
 	/**

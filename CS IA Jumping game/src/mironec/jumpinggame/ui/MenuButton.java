@@ -3,11 +3,16 @@ package mironec.jumpinggame.ui;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
+import java.net.URL;
+
+import javax.imageio.ImageIO;
 
 public class MenuButton implements MouseListener {
 	
@@ -36,6 +41,15 @@ public class MenuButton implements MouseListener {
 	 * Constructs the image of the menuButton. Required to properly paint(g) it.
 	 */
 	private void constructImage(){
+		try {
+			URL url = this.getClass().getResource("/res/"+text+".png");
+			if(url==null){throw new IOException();}
+			image = new BufferedImage(width, height, BufferedImage.TYPE_INT_ARGB);
+			BufferedImage img = ImageIO.read(url);
+			((Graphics2D)image.getGraphics()).drawImage(img.getScaledInstance(width, height, Image.SCALE_SMOOTH),0,0,null);
+			return;
+		} catch (IOException e) {}
+		
 		Graphics2D g = (Graphics2D)image.getGraphics();
 		g.setRenderingHint(RenderingHints.KEY_ANTIALIASING, RenderingHints.VALUE_ANTIALIAS_ON);
 		if(drawBorder){
