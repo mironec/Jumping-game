@@ -260,15 +260,15 @@ public class Main extends Applet implements KeyListener, MouseListener {
 				System.exit(0);
 			}
 		};
-		sk = new MenuButton("sk",5,5,Game.PLATFORM_HEIGHT*2,Game.PLATFORM_HEIGHT){
+		en = new MenuButton("en",5,5,16,11){
 			public void buttonAction() {
-				locale = new Localization("SK");
+				locale = new Localization("EN");
 				pauseGame();
 			}
 		};
-		en = new MenuButton("en",10+Game.PLATFORM_HEIGHT*2,5,Game.PLATFORM_HEIGHT*2,Game.PLATFORM_HEIGHT){
+		sk = new MenuButton("sk",26,5,16,11){
 			public void buttonAction() {
-				locale = new Localization("EN");
+				locale = new Localization("SK");
 				pauseGame();
 			}
 		};

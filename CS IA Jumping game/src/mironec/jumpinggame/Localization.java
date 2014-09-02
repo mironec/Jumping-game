@@ -18,7 +18,7 @@ public class Localization {
 		put("enteryourname", new String[]{"enteryourname","Enter your name:","Napíšte svoje meno:"});
 		put("submit", new String[]{"submit","Submit","Odosla"});
 		put("return", new String[]{"return","Return","Vráti sa"});
-		put("reset", new String[]{"reset","Reset high scores","Vynulova vysoké skóre"});
+		put("reset", new String[]{"reset","Reset high scores","Vynulova tabu¾ku"});
 		put("playAgain", new String[]{"playAgain","Play again","Hra znovu"});
 		put("gameOver", new String[]{"gameOver","Game over","Prehra"});
 	}};

@@ -87,8 +87,6 @@ public class Highscores implements KeyListener, MouseListener {
 				saveHighscores();
 			}
 		};
-		//reset.setDrawBorder(true);
-		//reset.setWhiteText(false);
 		
 		returnu = new MenuButton(m.getLocalization().getWord("return"), m.getWidth()/2-Game.PLATFORM_WIDTH*2, Game.PLATFORM_HEIGHT*16, Game.PLATFORM_WIDTH*4, Game.PLATFORM_HEIGHT*2){
 			@Override
@@ -96,8 +94,6 @@ public class Highscores implements KeyListener, MouseListener {
 				m.unpauseGame();
 			}
 		};
-		//returnu.setDrawBorder(true);
-		//returnu.setWhiteText(false);
 	}
 	
 	public void showHighscoreEnter(int score){
