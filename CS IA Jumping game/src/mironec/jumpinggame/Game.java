@@ -19,8 +19,8 @@ public class Game{
 	public static final int PLATFORM_WIDTH = 100;
 	public static final int PLATFORM_HEIGHT = 30;
 	public static final int MAX_NUMBER = 20;
-	public static final int EXPANDING_TICKS = 25;
-	public static final int DYING_TICKS = 500;
+	public static final int EXPANDING_TICKS = 25;					//half a second
+	public static final int DYING_TICKS_DEFAULT = 1500;				//30 seconds
 	private static final int MIN_SPACE = 30;
 	private static final int HEIGHT_BETWEEN_PLATFORMS = 200;
 	/**
@@ -43,6 +43,7 @@ public class Game{
 	private int score;
 	private int levelsDone;
 	private int width, height;
+	private int dyingTicks;
 	
 	public Game(Main m){
 		this.m=m;
@@ -93,6 +94,7 @@ public class Game{
 		ticksToExpand = EXPANDING_TICKS;
 		blackSpace = new Rectangle(p.getX(), p.getY(), p.getWidth(), p.getHeight());
 		levelsDone++;
+		dyingTicks = (int)(DYING_TICKS_DEFAULT/(1.0f+levelsDone/10));
 		score=calcScore(score,levelsDone);
 	}
 	
@@ -126,6 +128,7 @@ public class Game{
 		viewPointY=-height+10;
 		safeGround=0;
 		blackSpace=null;
+		dyingTicks=DYING_TICKS_DEFAULT;
 		
 		rand = new Random();
 		LEVELS_VISIBLE=0;
@@ -187,11 +190,11 @@ public class Game{
 			blackSpace=null;
 			viewPointY=safeGround-m.getHeight()+50;
 			ticksToExpand=-1;
-			ticksToDie=DYING_TICKS;
+			ticksToDie=dyingTicks;
 		}
 		//Movement of the screen downwards with passing time
 		if(ticksToDie > 0 && ticksToExpand == -1){
-			viewPointY = safeGround-m.getHeight()+50-(int)(50f*(DYING_TICKS-ticksToDie)/DYING_TICKS);
+			viewPointY = safeGround-m.getHeight()+50-(int)(50f*(dyingTicks-ticksToDie)/dyingTicks);
 			ticksToDie--;
 		}
 		//Dying by running out of time
