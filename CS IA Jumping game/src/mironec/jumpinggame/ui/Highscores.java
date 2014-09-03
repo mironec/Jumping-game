@@ -146,8 +146,8 @@ public class Highscores implements KeyListener, MouseListener {
 	}
 	
 	public void resetHighscores(ScoreEntry[] scores){
-		scores = new ScoreEntry[numOfScores];
-		for(int x=0;x<numOfScores;x++)
+		//scores = new ScoreEntry[numOfScores];
+		for(int x=0;x<scores.length;x++)
 			scores[x] = new ScoreEntry("Nobody", 0);
 	}
 	
