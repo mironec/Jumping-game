@@ -83,7 +83,7 @@ public class Highscores implements KeyListener, MouseListener {
 		reset = new MenuButton(m.getLocalization().getWord("reset"), m.getWidth()/2-Game.PLATFORM_WIDTH*2, Game.PLATFORM_HEIGHT*13, Game.PLATFORM_WIDTH*4, Game.PLATFORM_HEIGHT*2){
 			@Override
 			public void buttonAction() {
-				resetHighscores();
+				resetHighscores(scores);
 				saveHighscores();
 			}
 		};
@@ -108,8 +108,6 @@ public class Highscores implements KeyListener, MouseListener {
 				m.showHighscores();
 			}
 		};
-		//submit.setDrawBorder(true);
-		//submit.setWhiteText(false);
 		
 		returnu = new MenuButton(m.getLocalization().getWord("return"), m.getWidth()/2-Game.PLATFORM_WIDTH*2, m.getHeight()/2+Game.PLATFORM_HEIGHT*7, Game.PLATFORM_WIDTH*4, Game.PLATFORM_HEIGHT*2){
 			@Override
@@ -117,8 +115,6 @@ public class Highscores implements KeyListener, MouseListener {
 				m.unpauseGame();
 			}
 		};
-		//returnu.setDrawBorder(true);
-		//returnu.setWhiteText(false);
 	}
 	
 	/**
@@ -127,7 +123,7 @@ public class Highscores implements KeyListener, MouseListener {
 	 */
 	private ScoreEntry[] loadHighscores(){
 		ScoreEntry[] scores;
-		scores = new ScoreEntry[5];
+		scores = new ScoreEntry[numOfScores];
 		File f = new File(highscoresFileName);
 		try {
 		if(f.exists()&&f.isFile()){
@@ -140,16 +136,17 @@ public class Highscores implements KeyListener, MouseListener {
 				br.close();
 			}
 			else{
-				resetHighscores();
+				resetHighscores(scores);
 			}
 		}
 		catch (IOException e) {
-			resetHighscores();
+			resetHighscores(scores);
 		}
 		return scores;
 	}
 	
-	public void resetHighscores(){
+	public void resetHighscores(ScoreEntry[] scores){
+		scores = new ScoreEntry[numOfScores];
 		for(int x=0;x<numOfScores;x++)
 			scores[x] = new ScoreEntry("Nobody", 0);
 	}
