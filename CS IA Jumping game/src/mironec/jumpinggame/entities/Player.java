@@ -49,9 +49,9 @@ public class Player {
 	 * Applies gravity, friction, jumps and moves to the sides.
 	 */
 	private void logic(){
-		if(g.getMain().keys[KeyEvent.VK_RIGHT]){velX+=2.0;}
-		if(g.getMain().keys[KeyEvent.VK_LEFT]){velX-=2.0;}
-		if(g.getMain().keys[KeyEvent.VK_UP]&&isJumping==false){velY=-JUMPING_FORCE; isJumping=true;}
+		if(g.getMain().keys[KeyEvent.VK_RIGHT]||g.getMain().keys[KeyEvent.VK_D]){velX+=2.0;}
+		if(g.getMain().keys[KeyEvent.VK_LEFT]||g.getMain().keys[KeyEvent.VK_A]){velX-=2.0;}
+		if((g.getMain().keys[KeyEvent.VK_UP]||g.getMain().keys[KeyEvent.VK_SPACE]||g.getMain().keys[KeyEvent.VK_W])&&isJumping==false){velY=-JUMPING_FORCE; isJumping=true;}
 		this.precX += velX - (velX*Game.FRICTION)/2;
 		this.precY += velY + Game.GRAVITY/2;
 		this.x = (int)precX;
